@@ -20,6 +20,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/NYTimes/gziphandler"
 	"github.com/openatx/atx-agent/jsonrpc"
 
 	"github.com/gorilla/mux"
@@ -1156,6 +1157,7 @@ func (server *Server) initHTTPServer() {
 		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE"},
 	}).Handler(m)
 	// logHandler := handlers.LoggingHandler(os.Stdout, handler)
+	handler = gziphandler.GzipHandler(handler)
 	server.httpServer = &http.Server{Handler: handler} // url(/stop) need it.
 }
 
