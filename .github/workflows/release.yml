@@ -16,7 +16,7 @@ jobs:
               uses: actions/checkout@v1
 
             - name: Create release on GitHub
-              uses: docker://goreleaser/goreleaser:1.18.2
+              uses: docker://goreleaser/goreleaser:v1.18.2
               with:
                 args: release
               env:
