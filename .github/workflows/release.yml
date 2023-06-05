@@ -1,0 +1,23 @@
+name: Release
+
+on:
+    push:
+        tags:
+            - v*
+
+
+
+jobs:
+    build-and-publish:
+        name: Build and Publish to GitHub
+        runs-on: ubuntu-latest
+        steps:
+            - name: Check out code
+              uses: actions/checkout@v1
+
+            - name: Create release on GitHub
+              uses: docker://goreleaser/goreleaser:1.18.2
+              with:
+                args: release
+              env:
+                GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
