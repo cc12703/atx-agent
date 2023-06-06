@@ -12,12 +12,25 @@ jobs:
         name: Build and Publish to GitHub
         runs-on: ubuntu-latest
         steps:
-            - name: Check out code
-              uses: actions/checkout@v1
-
-            - name: Create release on GitHub
-              uses: docker://goreleaser/goreleaser:v1.18.2
+            - name: Set up Go
+              uses: actions/setup-go@v4
               with:
-                args: release
+                go-version: '1.20.1'
+
+            - name: Check out code
+              uses: actions/checkout@v3
+            
+            - name: Prepare For Build
+              run: |
+                go mod tidy
+                go get -v github.com/shurcooL/vfsgen
+                go generate
+                
+            - name: Create release on GitHub
+              uses: goreleaser/goreleaser-action@v4
+              with:
+                distribution: goreleaser
+                version: '1.18.2'
+                args: release --clean
               env:
                 GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

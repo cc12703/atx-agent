@@ -15,5 +15,3 @@ builds:
       - goos: windows
         goarch: 386
     flags: -tags vfs
-    hooks:
-      pre: go generate
