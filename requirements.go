@@ -93,3 +93,11 @@ func installMinitouch() error {
 	_, err := httpDownload("/data/local/tmp/minitouch", binURL, 0755)
 	return err
 }
+
+func installScrcpy() error {
+	url := "https://github.com/Genymobile/scrcpy/releases/download/v2.1.1/scrcpy-server-v2.1.1"
+	if _, err := httpDownload("/data/local/tmp/scrcpy-serv-agent.jar", url, 0644); err != nil {
+		return err
+	}
+	return nil
+}

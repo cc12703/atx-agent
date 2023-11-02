@@ -55,6 +55,7 @@ var (
 	rotationPublisher   = broadcast.NewBroadcaster(1)
 	minicapSocketPath   = "@minicap"
 	minitouchSocketPath = "@minitouch"
+	scrcpySocketPath    = "@scrcpy_00000100"
 	log                 = logger.Default
 )
 
@@ -114,6 +115,16 @@ func singleFightNewerWebsocket(handleFunc func(http.ResponseWriter, *http.Reques
 			delete(muxConns, r.RequestURI)
 		}
 		muxMutex.Unlock()
+	}
+}
+
+func waitServerStarted(name string) {
+	for {
+		if service.Started(name) {
+			log.Println(name, "Started")
+			break
+		}
+		time.Sleep(1 * time.Second)
 	}
 }
 
@@ -647,6 +658,17 @@ func main() {
 	})
 
 	service.Start("apkagent")
+
+	service.Add("scrcpy", cmdctrl.CommandInfo{
+		MaxRetries: 2,
+		Shell:      true,
+		Environ:    []string{"CLASSPATH=/data/local/tmp/scrcpy-serv-agent.jar"},
+		Args: []string{"exec", "app_process", "/", "com.genymobile.scrcpy.Server", "2.1.1",
+			"cleanup=false", "control=true", "scid=100", "audio=false", "send_device_meta=false",
+			"max_fps=24", "video_bit_rate=524288", "max_size=720",
+			"send_frame_meta=true", "send_dummy_byte=false", "send_codec_meta=false", "tunnel_forward=true", "display_id=0"},
+		StopSignal: os.Interrupt,
+	})
 
 	service.Add("minitouch", cmdctrl.CommandInfo{
 		MaxRetries: 2,

@@ -32,6 +32,8 @@ import (
 	"github.com/rs/cors"
 )
 
+const SCRCPY_IOBUF_MAXSIZE = (300 * 1024)
+
 type Server struct {
 	// tunnel     *TunnelProxy
 	httpServer *http.Server
@@ -869,6 +871,22 @@ func (server *Server) initHTTPServer() {
 		}
 		io.WriteString(w, "Unable to canceled")
 	}).Methods("DELETE")
+
+	m.HandleFunc("/scrcpy", func(w http.ResponseWriter, r *http.Request) {
+		if err := installScrcpy(); err == nil {
+			log.Println("update scrcpy success")
+			io.WriteString(w, "Update scrcpy success")
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+	}).Methods("PUT")
+
+	m.HandleFunc("/scrcpy", func(w http.ResponseWriter, r *http.Request) {
+		service.Stop("scrcpy", true)
+		io.WriteString(w, "scrcpy stopped")
+	}).Methods("DELETE")
+
+	m.HandleFunc("/scrcpy", buildScrcpyHandler()).Methods("GET")
 
 	// fix minitouch
 	m.HandleFunc("/minitouch", func(w http.ResponseWriter, r *http.Request) {

@@ -157,7 +157,8 @@ func (cc *CommandCtrl) Restart(name string) error {
 // UpdateArgs func is not like exec.Command, the first argument name means cmdctl service name
 // the seconds argument args, should like "echo", "hello"
 // Example usage:
-//   UpdateArgs("minitouch", "/data/local/tmp/minitouch", "-t", "1")
+//
+//	UpdateArgs("minitouch", "/data/local/tmp/minitouch", "-t", "1")
 func (cc *CommandCtrl) UpdateArgs(name string, args ...string) error {
 	cc.rl.RLock()
 	defer cc.rl.RUnlock()
@@ -185,6 +186,16 @@ func (cc *CommandCtrl) Running(name string) bool {
 		return false
 	}
 	return pkeeper.keeping
+}
+
+func (cc *CommandCtrl) Started(name string) bool {
+	cc.rl.RLock()
+	defer cc.rl.RUnlock()
+	pkeeper, ok := cc.cmds[name]
+	if !ok {
+		return false
+	}
+	return pkeeper.running
 }
 
 // keep process running
