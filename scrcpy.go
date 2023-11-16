@@ -29,6 +29,10 @@ func buildScrcpyHandler() http.HandlerFunc {
 
 		waitServerStarted("scrcpy")
 
+		defer func() {
+			service.Stop("scrcpy")
+		}()
+
 		//quitC := make(chan bool, 2)
 
 		vconn, err := net.Dial("unix", scrcpySocketPath)
@@ -119,7 +123,7 @@ func sendTouchRequest(conn net.Conn, reqData map[string]interface{}) error {
 	buf := bytes.NewBuffer(nil)
 	buf.WriteByte(2)                                    // type
 	action := OPER_TO_ACTIONS[reqData["oper"].(string)] // action
-	log.Printf("action: %d", action)
+	//log.Printf("action: %d", action)
 	buf.WriteByte(action) //action
 
 	binary.Write(buf, binary.BigEndian, uint64(valToInt(reqData["id"]))) // pointerId
